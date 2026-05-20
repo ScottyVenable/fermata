@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="ATC Phrase Forge — practice Air Traffic Control phraseology on mobile with a slot-and-tray builder, quiz mode, and aircraft database." />
+  <title>ATC Phrase Forge</title>
+
+  <!-- Tailwind CSS via CDN. No build step. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 Free via CDN. -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!--
+    Design system:
+    - Corporate sans-serif stack. We explicitly do NOT use Inter (per spec).
+    - Color-coded chips: indigo=tower, blue=aircraft, amber=wind, green=runway, rose=action.
+    - 44x44px minimum tap targets, mobile-first, no horizontal scroll.
+  -->
+  <style>
+    :root {
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   Helvetica, Arial, sans-serif;
+
+      /* Semantic chip palette — single source of truth. */
+      --chip-tower-bg:    #e0e7ff; --chip-tower-fg:    #3730a3; --chip-tower-ring:    #a5b4fc;
+      --chip-aircraft-bg: #dbeafe; --chip-aircraft-fg: #1e40af; --chip-aircraft-ring: #93c5fd;
+      --chip-wind-bg:     #fef3c7; --chip-wind-fg:     #78350f; --chip-wind-ring:     #fcd34d;
+      --chip-runway-bg:   #dcfce7; --chip-runway-fg:   #166534; --chip-runway-ring:   #86efac;
+      --chip-action-bg:   #ffe4e6; --chip-action-fg:   #9f1239; --chip-action-ring:   #fda4af;
+    }
+
+    html, body {
+      font-family: var(--font-sans);
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+      background: #f8fafc; /* slate-50 */
+      color: #0f172a;     /* slate-900 */
+      overscroll-behavior-y: none;
+    }
+    /* Lock horizontal scroll. */
+    body { overflow-x: hidden; }
+
+    /* Chip base. */
+    .chip {
+      display: inline-flex; align-items: center; gap: .375rem;
+      padding: .5rem .75rem; border-radius: .75rem;
+      font-weight: 600; font-size: .875rem; line-height: 1;
+      min-height: 44px; min-width: 44px; justify-content: center;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+      user-select: none; -webkit-user-select: none;
+      transition: transform .06s ease, box-shadow .15s ease, opacity .15s ease;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .chip:active { transform: scale(0.97); }
+    .chip[data-kind="tower"]    { background: var(--chip-tower-bg);    color: var(--chip-tower-fg);    box-shadow: inset 0 0 0 1px var(--chip-tower-ring); }
+    .chip[data-kind="aircraft"] { background: var(--chip-aircraft-bg); color: var(--chip-aircraft-fg); box-shadow: inset 0 0 0 1px var(--chip-aircraft-ring); }
+    .chip[data-kind="wind"]     { background: var(--chip-wind-bg);     color: var(--chip-wind-fg);     box-shadow: inset 0 0 0 1px var(--chip-wind-ring); }
+    .chip[data-kind="runway"]   { background: var(--chip-runway-bg);   color: var(--chip-runway-fg);   box-shadow: inset 0 0 0 1px var(--chip-runway-ring); }
+    .chip[data-kind="action"]   { background: var(--chip-action-bg);   color: var(--chip-action-fg);   box-shadow: inset 0 0 0 1px var(--chip-action-ring); }
+
+    /* Empty slot. */
+    .slot {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: .5rem .875rem; border-radius: .75rem;
+      min-height: 44px; min-width: 64px;
+      border: 2px dashed #cbd5e1; /* slate-300 */
+      background: #f8fafc;        /* slate-50 */
+      color: #64748b;             /* slate-500 */
+      font-weight: 600; font-size: .8125rem; line-height: 1;
+      cursor: pointer;
+      transition: background-color .15s ease, border-color .15s ease;
+    }
+    .slot:hover  { background: #f1f5f9; }
+    .slot:active { background: #e2e8f0; }
+    .slot[data-kind="tower"]    { border-color: var(--chip-tower-ring);    color: var(--chip-tower-fg); }
+    .slot[data-kind="aircraft"] { border-color: var(--chip-aircraft-ring); color: var(--chip-aircraft-fg); }
+    .slot[data-kind="wind"]     { border-color: var(--chip-wind-ring);     color: var(--chip-wind-fg); }
+    .slot[data-kind="runway"]   { border-color: var(--chip-runway-ring);   color: var(--chip-runway-fg); }
+    .slot[data-kind="action"]   { border-color: var(--chip-action-ring);   color: var(--chip-action-fg); }
+
+    /* Bottom-sheet animation. */
+    .sheet-enter { transform: translateY(100%); }
+    .sheet-enter-active { transform: translateY(0); transition: transform .25s ease-out; }
+    .sheet-exit { transform: translateY(0); }
+    .sheet-exit-active { transform: translateY(100%); transition: transform .2s ease-in; }
+
+    /* Hide scrollbars on chip rails but keep scrollability. */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Safe-area padding for iOS notches. */
+    .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0.5rem); }
+    .safe-top    { padding-top: max(env(safe-area-inset-top), 0.5rem); }
+
+    /* Prevent text selection during long-press on chips. */
+    .chip, .slot { -webkit-touch-callout: none; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ============================================================
+       TOP APP BAR
+       ============================================================ -->
+  <header class="safe-top sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-screen-sm mx-auto px-4 py-3 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-slate-900 text-white grid place-items-center">
+        <i class="fa-solid fa-tower-broadcast text-sm" aria-hidden="true"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h1 class="text-base font-bold tracking-tight truncate">ATC Phrase Forge</h1>
+        <p id="viewSubtitle" class="text-xs text-slate-500 truncate">Build the call. Transmit. Repeat.</p>
+      </div>
+      <button id="towerBadge" type="button"
+              class="chip" data-kind="tower"
+              aria-label="Current tower callsign — tap to change">
+        <i class="fa-solid fa-broadcast-tower" aria-hidden="true"></i>
+        <span id="towerBadgeText">Tower</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       VIEW CONTAINER
+       ============================================================ -->
+  <main id="viewRoot" class="flex-1 max-w-screen-sm w-full mx-auto px-4 pt-4 pb-28">
+    <!-- Views are mounted here by the router. -->
+  </main>
+
+  <!-- ============================================================
+       BOTTOM NAVIGATION (fixed)
+       ============================================================ -->
+  <nav id="bottomNav"
+       class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200 safe-bottom"
+       aria-label="Primary">
+    <div class="max-w-screen-sm mx-auto grid grid-cols-6">
+      <!-- Each nav button is a tap target ≥ 44x44px. -->
+      <button class="nav-btn" data-view="builder"  aria-label="Practice Builder">
+        <i class="fa-solid fa-microphone-lines" aria-hidden="true"></i>
+        <span>Build</span>
+      </button>
+      <button class="nav-btn" data-view="challenge" aria-label="Challenge mode">
+        <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+        <span>Quiz</span>
+      </button>
+      <button class="nav-btn" data-view="aircraft" aria-label="Aircraft database">
+        <i class="fa-solid fa-plane" aria-hidden="true"></i>
+        <span>Planes</span>
+      </button>
+      <button class="nav-btn" data-view="history"  aria-label="Transmission history">
+        <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+        <span>Log</span>
+      </button>
+      <button class="nav-btn" data-view="glossary" aria-label="Glossary">
+        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+        <span>Terms</span>
+      </button>
+      <button class="nav-btn" data-view="settings" aria-label="Settings">
+        <i class="fa-solid fa-gear" aria-hidden="true"></i>
+        <span>Settings</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Shared style for nav buttons (kept here for proximity). -->
+  <style>
+    .nav-btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; padding: 8px 4px; min-height: 56px;
+      font-size: 11px; font-weight: 600;
+      color: #64748b; /* slate-500 */
+    }
+    .nav-btn i { font-size: 18px; }
+    .nav-btn[aria-current="page"] { color: #0f172a; }
+    .nav-btn[aria-current="page"] i { color: #4f46e5; /* indigo-600 */ }
+  </style>
+
+  <!-- ============================================================
+       BOTTOM SHEET (Tray) + Tooltip Modal — single shared overlay.
+       ============================================================ -->
+  <div id="overlay" class="hidden fixed inset-0 z-40">
+    <div id="overlayBackdrop" class="absolute inset-0 bg-slate-900/40"></div>
+    <div id="sheet"
+         class="absolute inset-x-0 bottom-0 bg-white rounded-t-3xl shadow-2xl safe-bottom max-h-[80vh] flex flex-col">
+      <div class="pt-3 pb-1 grid place-items-center">
+        <span class="block w-10 h-1.5 rounded-full bg-slate-300"></span>
+      </div>
+      <div class="px-4 pb-2 flex items-center justify-between">
+        <h2 id="sheetTitle" class="text-base font-bold">Pick one</h2>
+        <button id="sheetClose"
+                class="min-h-[44px] min-w-[44px] grid place-items-center text-slate-500"
+                aria-label="Close">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div id="sheetBody" class="px-4 pb-4 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOAST (transient feedback)
+       ============================================================ -->
+  <div id="toast"
+       class="hidden fixed left-1/2 -translate-x-1/2 bottom-24 z-50
+              bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-full shadow-lg">
+  </div>
+
+  <!-- ============================================================
+       APPLICATION SCRIPT
+       ============================================================ -->
+  <script>
+  (function () {
+    'use strict';
+
+    // ====================================================================
+    // STORAGE — single key, versioned schema.
+    // ====================================================================
+    const STORAGE_KEY = 'atc-phrase-forge:v1';
+
+    const DEFAULT_PLANES = [
+      { id: uid(), callsign: 'N172SP', type: 'Cessna 172' },
+      { id: uid(), callsign: 'N28PV', type: 'Piper PA-28' },
+      { id: uid(), callsign: 'N456RV', type: 'Cirrus SR22' },
+    ];
+
+    // Glossary — short, plain-English definitions. Feeds long-press tooltips.
+    const GLOSSARY = [
+      { term: 'Tower',          short: 'Air Traffic Control facility for an airport.',
+        long: 'The controller responsible for aircraft operating in the immediate vicinity of an airport — takeoffs, landings, and the traffic pattern.' },
+      { term: 'Callsign',       short: 'Unique identifier for an aircraft on the radio.',
+        long: 'In the US, civilian aircraft use an N-number (e.g., N172SP). Read on first contact, then often shortened.' },
+      { term: 'Runway',         short: 'The strip you take off from and land on.',
+        long: 'Runways are named by their magnetic heading divided by 10. Runway 27 points roughly 270° (west).' },
+      { term: 'Wind',           short: 'Direction the wind is blowing FROM and its speed.',
+        long: 'Reported as "wind 270 at 10" — from 270° at 10 knots. Pilots land into the wind whenever practical.' },
+      { term: 'Cleared to Land', short: 'Authorized to land on the named runway.',
+        long: 'A landing clearance authorizes the pilot to touch down on the specified runway. Wind information is typically included.' },
+      { term: 'Cleared for Takeoff', short: 'Authorized to depart on the named runway.',
+        long: 'A takeoff clearance authorizes the pilot to depart on the named runway. Only one aircraft is cleared on a runway at a time.' },
+      { term: 'Go Around',      short: 'Abort the landing; climb and re-enter the pattern.',
+        long: 'Issued (or initiated by the pilot) when landing cannot be completed safely. The pilot climbs, follows missed-approach or pattern instructions, and tries again.' },
+      { term: 'Line Up and Wait', short: 'Taxi onto the runway and hold until cleared.',
+        long: 'Pilot enters the runway and waits in position for a takeoff clearance. Replaced the older phrase "position and hold".' },
+      { term: 'Hold Short',     short: 'Stop before the runway hold line.',
+        long: 'Do not enter the runway. Used to sequence ground or arriving traffic.' },
+      { term: 'Inbound',        short: 'Heading toward the airport.',
+        long: 'Typically announced with distance and direction, e.g., "10 miles south, inbound for landing".' },
+      { term: 'Final',          short: 'The last leg of the traffic pattern before landing.',
+        long: 'The straight-in segment aligned with the runway centerline, just before touchdown.' },
+      { term: 'Traffic Pattern',short: 'Standard rectangle flown around an airport.',
+        long: 'Upwind, crosswind, downwind, base, and final — the five legs of a normal traffic pattern.' },
+    ];
+
+    const ACTIONS = [
+      'Cleared to Land',
+      'Cleared for Takeoff',
+      'Line Up and Wait',
+      'Hold Short',
+      'Go Around',
+    ];
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          // Backfill any missing fields if schema evolves.
+          return Object.assign(defaultState(), parsed);
+        }
+      } catch (e) {
+        console.warn('Failed to load state; resetting.', e);
+      }
+      return defaultState();
+    }
+
+    function defaultState() {
+      return {
+        settings: { towerCallsign: 'Tower' },
+        planes: DEFAULT_PLANES.slice(),
+        history: [], // { id, ts, callsign, phrase }
+        glossary: GLOSSARY.slice(),
+      };
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.warn('Failed to save state.', e);
+      }
+    }
+
+    const state = loadState();
+
+    // Per-session scratch (not persisted).
+    const session = {
+      activeView: 'builder',
+      builder: null,    // current builder phrase data
+      challenge: null,  // current challenge data
+    };
+
+    // ====================================================================
+    // UTILITIES
+    // ====================================================================
+    function uid() {
+      return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+    }
+
+    function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function pick(arr) { return arr[rand(0, arr.length - 1)]; }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+      );
+    }
+
+    // Generate a valid-looking US N-number: N + 1-5 alphanumerics, never starts with 0,
+    // and never contains I or O (FAA rule, to avoid confusion with 1 and 0).
+    // We use the simple pattern N + digit(1-9) + 0-3 digits + optional 1-2 letters.
+    function randomNNumber() {
+      const allowed = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // no I, no O
+      const digits = String(rand(1, 9)) + String(rand(0, 999)).padStart(rand(1, 3), '0');
+      const tail = Math.random() < 0.5
+        ? allowed[rand(0, allowed.length - 1)] + (Math.random() < 0.4 ? allowed[rand(0, allowed.length - 1)] : '')
+        : '';
+      return 'N' + digits + tail;
+    }
+
+    const AIRCRAFT_TYPES = [
+      'Cessna 172', 'Cessna 152', 'Cessna 182', 'Piper PA-28', 'Piper Cherokee',
+      'Cirrus SR20', 'Cirrus SR22', 'Diamond DA40', 'Beechcraft Bonanza',
+      'Mooney M20', 'Robinson R44',
+    ];
+
+    function randomAircraftType() { return pick(AIRCRAFT_TYPES); }
+
+    function randomWind() {
+      // Direction rounded to nearest 10° (real ATIS rounding).
+      const dir = rand(0, 35) * 10;
+      const speed = rand(3, 18);
+      return { dir, speed };
+    }
+
+    function formatWindDir(dir) {
+      return String(dir).padStart(3, '0');
+    }
+
+    function randomRunway() {
+      // Real runways are 01–36. Use a small realistic subset.
+      const choices = ['09', '18', '22', '27', '36', '04', '13', '31'];
+      return pick(choices);
+    }
+
+    function towerCallsign() {
+      return (state.settings.towerCallsign || 'Tower').trim() || 'Tower';
+    }
+
+    // ====================================================================
+    // GLOSSARY LOOKUP
+    // ====================================================================
+    function glossaryLookup(label, kind) {
+      // Try exact, then by kind, then by partial.
+      const direct = state.glossary.find((g) => g.term.toLowerCase() === String(label).toLowerCase());
+      if (direct) return direct;
+      const byKind = {
+        tower:    'Tower',
+        aircraft: 'Callsign',
+        wind:     'Wind',
+        runway:   'Runway',
+        action:   label,
+      }[kind];
+      if (byKind) {
+        const k = state.glossary.find((g) => g.term.toLowerCase() === String(byKind).toLowerCase());
+        if (k) return k;
+      }
+      return { term: label, short: 'No glossary entry yet.', long: '' };
+    }
+
+    // ====================================================================
+    // OVERLAY / BOTTOM SHEET
+    // ====================================================================
+    const overlay        = document.getElementById('overlay');
+    const overlayBackdrop= document.getElementById('overlayBackdrop');
+    const sheetEl        = document.getElementById('sheet');
+    const sheetTitle     = document.getElementById('sheetTitle');
+    const sheetBody      = document.getElementById('sheetBody');
+    const sheetClose     = document.getElementById('sheetClose');
+    const toastEl        = document.getElementById('toast');
+
+    function openSheet(title, contentHtml, { onMount } = {}) {
+      sheetTitle.textContent = title;
+      sheetBody.innerHTML = contentHtml;
+      overlay.classList.remove('hidden');
+      // animate
+      sheetEl.classList.add('sheet-enter');
+      requestAnimationFrame(() => {
+        sheetEl.classList.add('sheet-enter-active');
+        sheetEl.classList.remove('sheet-enter');
+      });
+      if (onMount) onMount(sheetBody);
+    }
+
+    function closeSheet() {
+      overlay.classList.add('hidden');
+      sheetEl.classList.remove('sheet-enter-active');
+    }
+
+    overlayBackdrop.addEventListener('click', closeSheet);
+    sheetClose.addEventListener('click', closeSheet);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !overlay.classList.contains('hidden')) closeSheet();
+    });
+
+    let toastTimer = null;
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.add('hidden'), 1800);
+    }
+
+    // ====================================================================
+    // LONG-PRESS TOOLTIPS
+    // ====================================================================
+    // Wires touch + contextmenu on any element with [data-tooltip-label] and
+    // [data-tooltip-kind]. Opens the glossary modal on long-press / right-click.
+    const LONG_PRESS_MS = 500;
+    let lpTimer = null;
+    let lpTriggered = false;
+
+    function showTooltipFor(label, kind) {
+      const entry = glossaryLookup(label, kind);
+      const html = `
+        <div class="space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="chip" data-kind="${escapeHtml(kind)}">${escapeHtml(label)}</span>
+            <span class="text-xs uppercase tracking-wide text-slate-500">${escapeHtml(kind)}</span>
+          </div>
+          <p class="text-sm text-slate-700">${escapeHtml(entry.short)}</p>
+          ${entry.long ? `<p class="text-sm text-slate-500 leading-relaxed">${escapeHtml(entry.long)}</p>` : ''}
+        </div>`;
+      openSheet(entry.term, html);
+    }
+
+    function attachLongPress(root) {
+      const targets = root.querySelectorAll('[data-tooltip-label]');
+      targets.forEach((el) => {
+        // Touch
+        el.addEventListener('touchstart', (e) => {
+          lpTriggered = false;
+          clearTimeout(lpTimer);
+          lpTimer = setTimeout(() => {
+            lpTriggered = true;
+            showTooltipFor(el.dataset.tooltipLabel, el.dataset.tooltipKind || '');
+            if (navigator.vibrate) try { navigator.vibrate(15); } catch (_) {}
+          }, LONG_PRESS_MS);
+        }, { passive: true });
+        ['touchend', 'touchcancel', 'touchmove'].forEach((evt) => {
+          el.addEventListener(evt, () => clearTimeout(lpTimer), { passive: true });
+        });
+        // Capture-phase click to swallow the tap that follows a long-press.
+        el.addEventListener('click', (e) => {
+          if (lpTriggered) { e.stopImmediatePropagation(); e.preventDefault(); lpTriggered = false; }
+        }, true);
+        // Desktop right-click.
+        el.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          showTooltipFor(el.dataset.tooltipLabel, el.dataset.tooltipKind || '');
+        });
+      });
+    }
+
+    // ====================================================================
+    // CHIP / SLOT RENDERERS
+    // ====================================================================
+    function chipHtml(label, kind, { tooltip = true } = {}) {
+      const tipAttrs = tooltip
+        ? ` data-tooltip-label="${escapeHtml(label)}" data-tooltip-kind="${escapeHtml(kind)}"`
+        : '';
+      return `<span class="chip" data-kind="${escapeHtml(kind)}"${tipAttrs}>${escapeHtml(label)}</span>`;
+    }
+
+    function slotHtml(slotKey, kind, label) {
+      return `<button type="button" class="slot" data-slot="${escapeHtml(slotKey)}" data-kind="${escapeHtml(kind)}">
+                <i class="fa-regular fa-square-plus mr-1.5" aria-hidden="true"></i>${escapeHtml(label)}
+              </button>`;
+    }
+
+    // ====================================================================
+    // ROUTER
+    // ====================================================================
+    const viewRoot     = document.getElementById('viewRoot');
+    const viewSubtitle = document.getElementById('viewSubtitle');
+    const navButtons   = document.querySelectorAll('#bottomNav .nav-btn');
+
+    const VIEW_META = {
+      builder:   { title: 'Build the call. Transmit. Repeat.', render: renderBuilder },
+      challenge: { title: 'Quiz mode — spot the trap.',         render: renderChallenge },
+      aircraft:  { title: 'Aircraft database.',                  render: renderAircraft },
+      history:   { title: 'Every call you have transmitted.',    render: renderHistory },
+      glossary:  { title: 'ATC terms, plain English.',           render: renderGlossary },
+      settings:  { title: 'Tune the app to your tower.',         render: renderSettings },
+    };
+
+    function navigate(viewName) {
+      if (!VIEW_META[viewName]) viewName = 'builder';
+      session.activeView = viewName;
+      navButtons.forEach((b) => {
+        if (b.dataset.view === viewName) b.setAttribute('aria-current', 'page');
+        else b.removeAttribute('aria-current');
+      });
+      viewSubtitle.textContent = VIEW_META[viewName].title;
+      viewRoot.innerHTML = '';
+      VIEW_META[viewName].render(viewRoot);
+      attachLongPress(viewRoot);
+      // Scroll to top on view switch.
+      window.scrollTo({ top: 0 });
+    }
+
+    navButtons.forEach((b) => b.addEventListener('click', () => navigate(b.dataset.view)));
+
+    // Top-bar tower badge opens settings.
+    document.getElementById('towerBadge').addEventListener('click', () => navigate('settings'));
+
+    // ====================================================================
+    // VIEW: PRACTICE BUILDER
+    // ====================================================================
+    function newBuilderScenario() {
+      const plane = pick(state.planes.length ? state.planes : DEFAULT_PLANES);
+      const wind  = randomWind();
+      const runway= randomRunway();
+      const distance = rand(3, 15);
+      const directions = ['north', 'south', 'east', 'west', 'northwest', 'northeast', 'southwest', 'southeast'];
+      const fromDir = pick(directions);
+
+      // Correct readback components — used by the Slot/Tray correctness logic.
+      return {
+        plane,
+        wind,
+        runway,
+        distance,
+        fromDir,
+        // Slot state: tower / aircraft / wind / runway / action (all required).
+        slots: { tower: null, aircraft: null, wind: null, runway: null, action: null },
+        // Correct answer used by Challenge mode (Builder accepts anything).
+        correct: {
+          tower:    towerCallsign(),
+          aircraft: plane.callsign,
+          wind:     `${formatWindDir(wind.dir)} at ${wind.speed}`,
+          runway:   `Runway ${runway}`,
+          action:   'Cleared to Land',
+        },
+      };
+    }
+
+    function builderIncomingText(s) {
+      // Simulated incoming transmission.
+      return `${towerCallsign()}, ${s.plane.callsign}, ${s.distance} miles ${s.fromDir} of the field, inbound for landing with information Alpha.`;
+    }
+
+    function builderOptionsFor(slotKey, s) {
+      // Returns array of { label, kind } chips for the tray.
+      const planes = state.planes.length ? state.planes : DEFAULT_PLANES;
+      switch (slotKey) {
+        case 'tower':    return [{ label: towerCallsign(), kind: 'tower' }];
+        case 'aircraft': return planes.map((p) => ({ label: p.callsign, kind: 'aircraft' }));
+        case 'wind':     return [{ label: `${formatWindDir(s.wind.dir)} at ${s.wind.speed}`, kind: 'wind' }];
+        case 'runway':   return [{ label: `Runway ${s.runway}`, kind: 'runway' }];
+        case 'action':   return ACTIONS.map((a) => ({ label: a, kind: 'action' }));
+      }
+      return [];
+    }
+
+    function renderBuilder(root) {
+      if (!session.builder) session.builder = newBuilderScenario();
+      const s = session.builder;
+
+      const slotsAllFilled = Object.values(s.slots).every(Boolean);
+
+      root.innerHTML = `
+        <section class="space-y-4">
+
+          <!-- Scenario / Incoming transmission -->
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Incoming</h2>
+              <button id="rerollBtn" type="button"
+                      class="min-h-[36px] px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-semibold inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-shuffle text-[10px]"></i> New scenario
+              </button>
+            </div>
+            <p class="text-[15px] leading-relaxed text-slate-800">
+              <i class="fa-solid fa-tower-broadcast text-slate-400 mr-1.5"></i>
+              ${escapeHtml(builderIncomingText(s))}
+            </p>
+            <div class="mt-3 grid grid-cols-3 gap-2 text-center">
+              <div class="rounded-xl bg-slate-50 ring-1 ring-slate-200 p-2">
+                <p class="text-[11px] uppercase tracking-wide text-slate-500">Aircraft</p>
+                <p class="text-sm font-semibold">${escapeHtml(s.plane.callsign)}</p>
+                <p class="text-[11px] text-slate-500">${escapeHtml(s.plane.type)}</p>
+              </div>
+              <div class="rounded-xl bg-slate-50 ring-1 ring-slate-200 p-2">
+                <p class="text-[11px] uppercase tracking-wide text-slate-500">Runway</p>
+                <p class="text-sm font-semibold">${escapeHtml(s.runway)}</p>
+                <p class="text-[11px] text-slate-500">active</p>
+              </div>
+              <div class="rounded-xl bg-slate-50 ring-1 ring-slate-200 p-2">
+                <p class="text-[11px] uppercase tracking-wide text-slate-500">Wind</p>
+                <p class="text-sm font-semibold">${formatWindDir(s.wind.dir)}°</p>
+                <p class="text-[11px] text-slate-500">${s.wind.speed} kt</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Builder area -->
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Your response</h2>
+            <div id="builderPhrase" class="flex flex-wrap items-center gap-2">
+              ${renderPhraseRow(s, 'tower',    'Tower')}
+              <span class="text-slate-400">,</span>
+              ${renderPhraseRow(s, 'aircraft', 'Callsign')}
+              <span class="text-slate-400">,</span>
+              <span class="text-slate-600 text-sm">wind</span>
+              ${renderPhraseRow(s, 'wind',     'Wind')}
+              <span class="text-slate-400">,</span>
+              ${renderPhraseRow(s, 'runway',   'Runway')}
+              <span class="text-slate-400">,</span>
+              ${renderPhraseRow(s, 'action',   'Instruction')}
+              <span class="text-slate-400">.</span>
+            </div>
+            <p class="mt-3 text-xs text-slate-500">
+              <i class="fa-regular fa-hand-pointer mr-1"></i>
+              Tap a dashed box to choose. Long-press a chip for a definition.
+            </p>
+          </article>
+
+          <!-- Transmit -->
+          <button id="transmitBtn" type="button"
+                  ${slotsAllFilled ? '' : 'disabled'}
+                  class="w-full min-h-[52px] rounded-2xl text-white text-base font-bold inline-flex items-center justify-center gap-2
+                         ${slotsAllFilled ? 'bg-rose-600 active:bg-rose-700' : 'bg-slate-300 cursor-not-allowed'}">
+            <i class="fa-solid fa-satellite-dish"></i> Transmit
+          </button>
+        </section>
+      `;
+
+      // Slot click → open tray.
+      root.querySelectorAll('[data-slot]').forEach((slotBtn) => {
+        slotBtn.addEventListener('click', () => openTrayFor(slotBtn.dataset.slot, 'builder'));
+      });
+
+      // Reroll.
+      root.querySelector('#rerollBtn').addEventListener('click', () => {
+        session.builder = newBuilderScenario();
+        navigate('builder');
+      });
+
+      // Transmit.
+      const tx = root.querySelector('#transmitBtn');
+      tx.addEventListener('click', () => {
+        if (tx.disabled) return;
+        const phrase = composePhrase(s.slots);
+        state.history.unshift({
+          id: uid(),
+          ts: Date.now(),
+          callsign: s.slots.aircraft || s.plane.callsign,
+          phrase,
+        });
+        saveState();
+        toast('Transmitted. Logged to History.');
+        session.builder = newBuilderScenario();
+        navigate('builder');
+      });
+    }
+
+    function renderPhraseRow(s, slotKey, label) {
+      const value = s.slots[slotKey];
+      const kind = slotKey === 'tower' ? 'tower'
+                : slotKey === 'aircraft' ? 'aircraft'
+                : slotKey === 'wind' ? 'wind'
+                : slotKey === 'runway' ? 'runway' : 'action';
+      if (!value) return slotHtml(slotKey, kind, label);
+      // Populated chip — tap to change, long-press for tooltip.
+      return `<button type="button" class="chip"
+                       data-kind="${kind}"
+                       data-slot="${slotKey}"
+                       data-tooltip-label="${escapeHtml(value)}"
+                       data-tooltip-kind="${kind}">
+                ${escapeHtml(value)}
+              </button>`;
+    }
+
+    function composePhrase(slots) {
+      return `${slots.tower}, ${slots.aircraft}, wind ${slots.wind}, ${slots.runway}, ${slots.action}.`;
+    }
+
+    // Open the tray for a given slot, in either 'builder' or 'challenge' context.
+    function openTrayFor(slotKey, context) {
+      const s = context === 'challenge' ? session.challenge : session.builder;
+      if (!s) return;
+
+      let options;
+      if (context === 'challenge') {
+        options = challengeOptionsFor(slotKey, s);
+      } else {
+        options = builderOptionsFor(slotKey, s);
+      }
+
+      const title = ({
+        tower: 'Tower callsign', aircraft: 'Aircraft callsign',
+        wind: 'Wind', runway: 'Runway', action: 'Instruction',
+      })[slotKey] || 'Choose';
+
+      const grid = options.map((opt, i) =>
+        `<button type="button" class="chip w-full justify-center"
+                 data-kind="${escapeHtml(opt.kind)}"
+                 data-tray-index="${i}">${escapeHtml(opt.label)}</button>`
+      ).join('');
+
+      openSheet(title, `
+        <p class="text-xs text-slate-500 mb-3">Tap to fill the slot. Long-press a chip to see its meaning.</p>
+        <div class="grid grid-cols-2 gap-2">${grid}</div>
+      `, {
+        onMount: (root) => {
+          attachLongPress(root);
+          root.querySelectorAll('[data-tray-index]').forEach((b) => {
+            b.addEventListener('click', () => {
+              const idx = Number(b.dataset.trayIndex);
+              s.slots[slotKey] = options[idx].label;
+              closeSheet();
+              navigate(context === 'challenge' ? 'challenge' : 'builder');
+            });
+          });
+        }
+      });
+    }
+
+    // ====================================================================
+    // VIEW: CHALLENGE
+    // ====================================================================
+    function newChallengeScenario() {
+      const base = newBuilderScenario();
+      base.result = null; // 'correct' | 'incorrect' | null
+      return base;
+    }
+
+    function challengeOptionsFor(slotKey, s) {
+      // Mix the correct chip with plausible trap options.
+      const correct = s.correct[slotKey];
+      const traps = [];
+      const planes = state.planes.length ? state.planes : DEFAULT_PLANES;
+      switch (slotKey) {
+        case 'tower':
+          traps.push('Ground', 'Approach', 'Departure');
+          break;
+        case 'aircraft':
+          // Use other planes as traps.
+          planes.filter((p) => p.callsign !== correct).slice(0, 3).forEach((p) => traps.push(p.callsign));
+          break;
+        case 'wind': {
+          const w = s.wind;
+          traps.push(`${formatWindDir((w.dir + 90) % 360)} at ${w.speed}`);
+          traps.push(`${formatWindDir(w.dir)} at ${Math.max(1, w.speed + 5)}`);
+          traps.push(`${formatWindDir((w.dir + 180) % 360)} at ${w.speed}`);
+          break;
+        }
+        case 'runway': {
+          const r = Number(s.runway);
+          const reciprocal = ((r + 18 - 1) % 36) + 1;
+          traps.push(`Runway ${String(reciprocal).padStart(2,'0')}`);
+          traps.push('Runway 27');
+          traps.push('Runway 09');
+          break;
+        }
+        case 'action':
+          ACTIONS.filter((a) => a !== correct).forEach((a) => traps.push(a));
+          break;
+      }
+      // De-dupe + cap.
+      const all = [correct, ...traps.filter((t) => t !== correct)].slice(0, 6);
+      // Shuffle.
+      for (let i = all.length - 1; i > 0; i--) {
+        const j = rand(0, i);
+        [all[i], all[j]] = [all[j], all[i]];
+      }
+      const kind = slotKey;
+      return all.map((label) => ({ label, kind }));
+    }
+
+    function renderChallenge(root) {
+      if (!session.challenge) session.challenge = newChallengeScenario();
+      const s = session.challenge;
+      const slotsAllFilled = Object.values(s.slots).every(Boolean);
+
+      let banner = '';
+      if (s.result === 'correct') {
+        banner = `<div class="rounded-xl bg-green-50 ring-1 ring-green-200 text-green-800 p-3 text-sm font-semibold">
+          <i class="fa-solid fa-circle-check mr-1.5"></i> Correct readback. Nice work.
+        </div>`;
+      } else if (s.result === 'incorrect') {
+        const correctPhrase = composePhrase(s.correct);
+        banner = `<div class="rounded-xl bg-rose-50 ring-1 ring-rose-200 text-rose-800 p-3 text-sm">
+          <p class="font-semibold mb-1"><i class="fa-solid fa-circle-xmark mr-1.5"></i> Not quite.</p>
+          <p class="text-[13px] text-rose-700/90">Expected: <span class="font-semibold">${escapeHtml(correctPhrase)}</span></p>
+        </div>`;
+      }
+
+      root.innerHTML = `
+        <section class="space-y-4">
+          ${banner}
+
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Incoming</h2>
+              <button id="challengeRerollBtn" type="button"
+                      class="min-h-[36px] px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-semibold inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-shuffle text-[10px]"></i> New
+              </button>
+            </div>
+            <p class="text-[15px] leading-relaxed text-slate-800">
+              <i class="fa-solid fa-tower-broadcast text-slate-400 mr-1.5"></i>
+              ${escapeHtml(builderIncomingText(s))}
+            </p>
+          </article>
+
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Construct the correct readback</h2>
+            <div class="flex flex-wrap items-center gap-2">
+              ${renderPhraseRow(s, 'tower',    'Tower')}
+              <span class="text-slate-400">,</span>
+              ${renderPhraseRow(s, 'aircraft', 'Callsign')}
+              <span class="text-slate-400">,</span>
+              <span class="text-slate-600 text-sm">wind</span>
+              ${renderPhraseRow(s, 'wind',     'Wind')}
+              <span class="text-slate-400">,</span>
+              ${renderPhraseRow(s, 'runway',   'Runway')}
+              <span class="text-slate-400">,</span>
+              ${renderPhraseRow(s, 'action',   'Instruction')}
+              <span class="text-slate-400">.</span>
+            </div>
+            <p class="mt-3 text-xs text-slate-500">
+              <i class="fa-regular fa-circle-question mr-1"></i>
+              Some chips are traps. Pick carefully.
+            </p>
+          </article>
+
+          <button id="checkBtn" type="button"
+                  ${slotsAllFilled ? '' : 'disabled'}
+                  class="w-full min-h-[52px] rounded-2xl text-white text-base font-bold inline-flex items-center justify-center gap-2
+                         ${slotsAllFilled ? 'bg-indigo-600 active:bg-indigo-700' : 'bg-slate-300 cursor-not-allowed'}">
+            <i class="fa-solid fa-check-double"></i> Check answer
+          </button>
+        </section>
+      `;
+
+      root.querySelectorAll('[data-slot]').forEach((slotBtn) => {
+        slotBtn.addEventListener('click', () => openTrayFor(slotBtn.dataset.slot, 'challenge'));
+      });
+      root.querySelector('#challengeRerollBtn').addEventListener('click', () => {
+        session.challenge = newChallengeScenario();
+        navigate('challenge');
+      });
+      const check = root.querySelector('#checkBtn');
+      check.addEventListener('click', () => {
+        if (check.disabled) return;
+        const ok = ['tower', 'aircraft', 'wind', 'runway', 'action'].every((k) => s.slots[k] === s.correct[k]);
+        s.result = ok ? 'correct' : 'incorrect';
+        if (ok) {
+          state.history.unshift({
+            id: uid(),
+            ts: Date.now(),
+            callsign: s.slots.aircraft || s.plane.callsign,
+            phrase: composePhrase(s.slots) + ' (quiz)',
+          });
+          saveState();
+        }
+        navigate('challenge');
+      });
+    }
+
+    // ====================================================================
+    // VIEW: AIRCRAFT DATABASE
+    // ====================================================================
+    function renderAircraft(root) {
+      root.innerHTML = `
+        <section class="space-y-4">
+
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Add aircraft</h2>
+            <form id="addPlaneForm" class="grid grid-cols-1 gap-3">
+              <label class="block">
+                <span class="text-xs font-semibold text-slate-600">Callsign</span>
+                <input name="callsign" required maxlength="10"
+                       placeholder="e.g. N172SP"
+                       class="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+              </label>
+              <label class="block">
+                <span class="text-xs font-semibold text-slate-600">Type</span>
+                <input name="type" required maxlength="40"
+                       placeholder="e.g. Cessna 172"
+                       class="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+              </label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="submit" class="min-h-[44px] rounded-xl bg-indigo-600 text-white font-semibold text-sm inline-flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-plus"></i> Add
+                </button>
+                <button type="button" id="randomPlaneBtn"
+                        class="min-h-[44px] rounded-xl bg-slate-100 text-slate-800 font-semibold text-sm inline-flex items-center justify-center gap-2 ring-1 ring-slate-200">
+                  <i class="fa-solid fa-dice"></i> Random
+                </button>
+              </div>
+            </form>
+          </article>
+
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Fleet (${state.planes.length})</h2>
+              <span class="text-xs text-slate-400">long-press = info</span>
+            </div>
+            ${state.planes.length === 0
+              ? `<p class="text-sm text-slate-500">No aircraft yet. Add one above.</p>`
+              : `<ul class="divide-y divide-slate-100">
+                  ${state.planes.map((p) => `
+                    <li class="py-2 flex items-center gap-3">
+                      <span class="chip" data-kind="aircraft"
+                            data-tooltip-label="${escapeHtml(p.callsign)}" data-tooltip-kind="aircraft">${escapeHtml(p.callsign)}</span>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold truncate">${escapeHtml(p.type)}</p>
+                      </div>
+                      <button data-del-plane="${escapeHtml(p.id)}"
+                              class="min-h-[44px] min-w-[44px] grid place-items-center text-slate-400 hover:text-rose-600"
+                              aria-label="Delete ${escapeHtml(p.callsign)}">
+                        <i class="fa-regular fa-trash-can"></i>
+                      </button>
+                    </li>`).join('')}
+                </ul>`}
+          </article>
+        </section>
+      `;
+
+      root.querySelector('#addPlaneForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.currentTarget);
+        const callsign = String(fd.get('callsign') || '').trim().toUpperCase();
+        const type     = String(fd.get('type') || '').trim();
+        if (!callsign || !type) return;
+        state.planes.push({ id: uid(), callsign, type });
+        saveState();
+        toast(`${callsign} added.`);
+        // Invalidate cached scenarios that might reference an old fleet.
+        session.builder = null; session.challenge = null;
+        navigate('aircraft');
+      });
+
+      root.querySelector('#randomPlaneBtn').addEventListener('click', () => {
+        const callsign = randomNNumber();
+        const type     = randomAircraftType();
+        state.planes.push({ id: uid(), callsign, type });
+        saveState();
+        toast(`${callsign} generated.`);
+        session.builder = null; session.challenge = null;
+        navigate('aircraft');
+      });
+
+      root.querySelectorAll('[data-del-plane]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.delPlane;
+          state.planes = state.planes.filter((p) => p.id !== id);
+          saveState();
+          session.builder = null; session.challenge = null;
+          navigate('aircraft');
+        });
+      });
+    }
+
+    // ====================================================================
+    // VIEW: HISTORY (grouped by callsign)
+    // ====================================================================
+    function renderHistory(root) {
+      const groups = {};
+      state.history.forEach((h) => {
+        (groups[h.callsign] = groups[h.callsign] || []).push(h);
+      });
+      const callsigns = Object.keys(groups);
+
+      root.innerHTML = `
+        <section class="space-y-4">
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4 flex items-center justify-between">
+            <div>
+              <h2 class="text-sm font-semibold">Transmission log</h2>
+              <p class="text-xs text-slate-500">${state.history.length} entries · ${callsigns.length} aircraft</p>
+            </div>
+            <button id="clearHistoryBtn" type="button"
+                    class="min-h-[40px] px-3 rounded-full bg-rose-50 text-rose-700 text-xs font-semibold ring-1 ring-rose-200 inline-flex items-center gap-1.5"
+                    ${state.history.length ? '' : 'disabled'}>
+              <i class="fa-regular fa-trash-can"></i> Clear all
+            </button>
+          </article>
+
+          ${callsigns.length === 0
+            ? `<p class="text-sm text-slate-500 text-center py-8">
+                 <i class="fa-regular fa-comment-dots text-2xl block mb-2 text-slate-300"></i>
+                 No transmissions yet. Build one in the Builder tab.
+               </p>`
+            : callsigns.map((cs) => `
+              <article class="bg-white rounded-2xl ring-1 ring-slate-200 overflow-hidden">
+                <header class="px-4 py-3 bg-blue-50/60 border-b border-blue-100 flex items-center gap-2">
+                  <span class="chip" data-kind="aircraft"
+                        data-tooltip-label="${escapeHtml(cs)}" data-tooltip-kind="aircraft">${escapeHtml(cs)}</span>
+                  <span class="text-xs text-slate-500">${groups[cs].length} call${groups[cs].length === 1 ? '' : 's'}</span>
+                </header>
+                <ul class="divide-y divide-slate-100">
+                  ${groups[cs].map((h) => `
+                    <li class="px-4 py-3 flex items-start gap-3">
+                      <i class="fa-solid fa-satellite-dish text-slate-300 mt-1"></i>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-slate-800 leading-relaxed">${escapeHtml(h.phrase)}</p>
+                        <p class="text-[11px] text-slate-400 mt-1">${escapeHtml(formatTs(h.ts))}</p>
+                      </div>
+                      <button data-del-log="${escapeHtml(h.id)}"
+                              class="min-h-[40px] min-w-[40px] grid place-items-center text-slate-400 hover:text-rose-600"
+                              aria-label="Delete entry">
+                        <i class="fa-regular fa-trash-can"></i>
+                      </button>
+                    </li>`).join('')}
+                </ul>
+              </article>
+            `).join('')}
+        </section>
+      `;
+
+      const clearBtn = root.querySelector('#clearHistoryBtn');
+      clearBtn.addEventListener('click', () => {
+        if (!state.history.length) return;
+        if (!confirm('Clear all transmission history?')) return;
+        state.history = [];
+        saveState();
+        navigate('history');
+      });
+      root.querySelectorAll('[data-del-log]').forEach((b) => {
+        b.addEventListener('click', () => {
+          const id = b.dataset.delLog;
+          state.history = state.history.filter((h) => h.id !== id);
+          saveState();
+          navigate('history');
+        });
+      });
+    }
+
+    function formatTs(ts) {
+      const d = new Date(ts);
+      return d.toLocaleString(undefined, {
+        month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      });
+    }
+
+    // ====================================================================
+    // VIEW: GLOSSARY
+    // ====================================================================
+    function renderGlossary(root) {
+      root.innerHTML = `
+        <section class="space-y-4">
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <h2 class="text-sm font-semibold mb-1">ATC glossary</h2>
+            <p class="text-xs text-slate-500">Plain-English definitions. These also feed long-press tooltips throughout the app.</p>
+          </article>
+          <ul class="space-y-2">
+            ${state.glossary.map((g) => `
+              <li class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <h3 class="text-sm font-bold">${escapeHtml(g.term)}</h3>
+                  <span class="text-[10px] uppercase tracking-wider text-slate-400">term</span>
+                </div>
+                <p class="text-sm text-slate-700">${escapeHtml(g.short)}</p>
+                ${g.long ? `<p class="mt-1 text-xs text-slate-500 leading-relaxed">${escapeHtml(g.long)}</p>` : ''}
+              </li>`).join('')}
+          </ul>
+        </section>
+      `;
+    }
+
+    // ====================================================================
+    // VIEW: SETTINGS
+    // ====================================================================
+    function renderSettings(root) {
+      root.innerHTML = `
+        <section class="space-y-4">
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <h2 class="text-sm font-semibold mb-3">Tower callsign</h2>
+            <p class="text-xs text-slate-500 mb-3">
+              Used in every builder and quiz scenario. Defaults to <span class="font-semibold">Tower</span>.
+            </p>
+            <form id="settingsForm" class="grid gap-3">
+              <input name="tower" value="${escapeHtml(state.settings.towerCallsign || '')}"
+                     maxlength="30" placeholder="e.g. Phoenix Tower"
+                     class="w-full min-h-[44px] rounded-xl border border-slate-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+              <button type="submit" class="min-h-[44px] rounded-xl bg-indigo-600 text-white font-semibold text-sm inline-flex items-center justify-center gap-2">
+                <i class="fa-solid fa-floppy-disk"></i> Save
+              </button>
+            </form>
+          </article>
+
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <h2 class="text-sm font-semibold mb-2">Data</h2>
+            <p class="text-xs text-slate-500 mb-3">Everything is stored locally in your browser.</p>
+            <button id="resetAllBtn" type="button"
+                    class="w-full min-h-[44px] rounded-xl bg-rose-50 text-rose-700 ring-1 ring-rose-200 text-sm font-semibold inline-flex items-center justify-center gap-2">
+              <i class="fa-solid fa-rotate-left"></i> Reset all data
+            </button>
+          </article>
+
+          <article class="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+            <h2 class="text-sm font-semibold mb-2">About</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              ATC Phrase Forge is a practice tool. Phraseology is simplified for learning and is not a substitute for FAA/ICAO authoritative sources.
+            </p>
+          </article>
+        </section>
+      `;
+
+      root.querySelector('#settingsForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.currentTarget);
+        const tower = String(fd.get('tower') || '').trim() || 'Tower';
+        state.settings.towerCallsign = tower;
+        saveState();
+        document.getElementById('towerBadgeText').textContent = tower;
+        session.builder = null; session.challenge = null;
+        toast('Settings saved.');
+      });
+
+      root.querySelector('#resetAllBtn').addEventListener('click', () => {
+        if (!confirm('Reset all data? Planes, history, settings, and glossary will return to defaults.')) return;
+        try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+        Object.assign(state, defaultState());
+        session.builder = null; session.challenge = null;
+        document.getElementById('towerBadgeText').textContent = towerCallsign();
+        toast('All data reset.');
+        navigate('builder');
+      });
+    }
+
+    // ====================================================================
+    // BOOT
+    // ====================================================================
+    document.getElementById('towerBadgeText').textContent = towerCallsign();
+    navigate('builder');
+
+    // Expose minimal hook for debugging without leaking the whole state.
+    window.__atcForge = { navigate, getState: () => JSON.parse(JSON.stringify(state)) };
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+# Project-local ignores. The repo root .gitignore covers most things —
+# only add entries here that are specific to this project.
+
+# Examples (uncomment as needed):
+# secrets.json
+# tmp/
+# *.local

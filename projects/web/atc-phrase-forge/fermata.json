@@ -1,0 +1,30 @@
+{
+  "name": "atc-phrase-forge",
+  "displayName": "ATC Phrase Forge",
+  "description": "Mobile-first SPA for practicing Air Traffic Control (ATC) phraseology with a slot-and-tray builder, quiz mode, and aircraft database.",
+  "category": "web",
+  "status": "experimental",
+  "platforms": [
+    "web"
+  ],
+  "tags": ["spa", "mobile", "aviation", "atc", "education", "tailwind"],
+  "authors": [
+    {
+      "name": "Scotty Venable",
+      "github": "ScottyVenable",
+      "role": "creator"
+    }
+  ],
+  "license": "GPL-3.0",
+  "created": "2026-05-20",
+  "entry": "index.html",
+  "stack": ["html", "tailwindcss", "javascript", "fontawesome"],
+  "dependencies": {
+    "shared": [],
+    "external": {
+      "tailwindcss": "^3 (CDN)",
+      "fontawesome": "^6 (CDN)"
+    }
+  },
+  "links": {}
+}
