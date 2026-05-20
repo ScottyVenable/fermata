@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Fermata Shared Dependency Manifest",
+  "type": "object",
+  "required": ["registry"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "registry": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["version", "kind", "description"],
+        "properties": {
+          "version": { "type": "string", "description": "Semver range." },
+          "kind": { "type": "string", "enum": ["npm", "pip", "cargo"] },
+          "description": { "type": "string", "minLength": 1 },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
