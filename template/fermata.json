@@ -1,0 +1,25 @@
+{
+  "name": "{{NAME}}",
+  "displayName": "{{DISPLAY_NAME}}",
+  "description": "One-line description. Replace this.",
+  "category": "{{CATEGORY}}",
+  "status": "experimental",
+  "platforms": ["web"],
+  "tags": [],
+  "authors": [
+    {
+      "name": "{{AUTHOR_NAME}}",
+      "github": "{{AUTHOR_GITHUB}}",
+      "role": "creator"
+    }
+  ],
+  "license": "GPL-3.0",
+  "created": "{{CREATED}}",
+  "entry": "",
+  "stack": [],
+  "dependencies": {
+    "shared": [],
+    "external": {}
+  },
+  "links": {}
+}

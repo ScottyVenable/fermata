@@ -1,0 +1,46 @@
+name: Organize on merge
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  organize:
+    name: regenerate indices and bump `updated`
+    runs-on: ubuntu-latest
+    # Skip when the most recent commit is itself the organize bot, to avoid loops.
+    if: "!contains(github.event.head_commit.message, '[skip organize]')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Need history so organize can diff HEAD~1..HEAD for `updated` bumps.
+          fetch-depth: 2
+          # Use a token that can push back to main.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run organize
+        run: |
+          node scripts/organize.mjs --bump-updated
+          node scripts/organize.mjs --view platforms
+
+      - name: Commit changes (if any)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "chore: regenerate indices and bump updated [skip organize]"
+            git push
+          else
+            echo "Nothing to commit."
+          fi

@@ -1,0 +1,23 @@
+{
+  "name": "fermata",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A sandbox monorepo for vibe-coded whims and hobby projects.",
+  "license": "GPL-3.0",
+  "author": "Scotty Venable (@ScottyVenable)",
+  "type": "module",
+  "scripts": {
+    "new": "node scripts/new-project.mjs",
+    "validate": "node scripts/validate.mjs",
+    "organize": "node scripts/organize.mjs",
+    "add-dep": "node scripts/add-dependency.mjs",
+    "deps": "node scripts/add-dependency.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ScottyVenable/fermata.git"
+  }
+}
