@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Read the guide first
+    url: https://github.com/ScottyVenable/fermata/blob/main/docs/GUIDE.md
+    about: Long-form walkthrough — start here for "how do I..." questions.
+  - name: Metadata spec
+    url: https://github.com/ScottyVenable/fermata/blob/main/docs/METADATA_SPEC.md
+    about: Reference for fermata.json.

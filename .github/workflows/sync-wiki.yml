@@ -1,0 +1,48 @@
+name: Sync wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/wiki/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: push docs/wiki/ to the GitHub Wiki
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync to wiki
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          WIKI_REPO="${{ github.server_url }}/${{ github.repository }}.wiki.git"
+          AUTH_REPO="$(echo "$WIKI_REPO" | sed -E "s#https://#https://x-access-token:${GITHUB_TOKEN}@#")"
+
+          tmp="$(mktemp -d)"
+          if ! git clone --depth 1 "$AUTH_REPO" "$tmp"; then
+            echo "Wiki repo not initialized yet. Create the wiki via the GitHub UI once (any page), then re-run this workflow."
+            exit 0
+          fi
+
+          # Wipe everything except .git, then copy fresh content.
+          find "$tmp" -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
+          cp -R docs/wiki/. "$tmp/"
+
+          cd "$tmp"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Sync wiki from docs/wiki/ @ ${{ github.sha }}"
+            git push
+          else
+            echo "Wiki is already in sync."
+          fi
