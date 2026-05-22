@@ -1,0 +1,35 @@
+{
+  "name": "antigravity-ide",
+  "displayName": "Antigravity IDE",
+  "description": "An autonomous agentic development environment featuring filesystems tools and real-time syncing.",
+  "category": "tools/dev",
+  "status": "experimental",
+  "platforms": [
+    "windows",
+    "android",
+    "web"
+  ],
+  "tags": [],
+  "authors": [
+    {
+      "name": "Scotty Venable",
+      "github": "ScottyVenable",
+      "role": "creator"
+    }
+  ],
+  "license": "GPL-3.0",
+  "created": "2026-05-22",
+  "entry": "",
+  "stack": [],
+  "dependencies": {
+    "shared": [
+      "@vitejs/plugin-react",
+      "lucide-react",
+      "react",
+      "react-dom",
+      "vite"
+    ],
+    "external": {}
+  },
+  "links": {}
+}

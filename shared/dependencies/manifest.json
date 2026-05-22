@@ -1,4 +1,30 @@
 {
   "$schema": "../../docs/manifest.schema.json",
-  "registry": {}
+  "registry": {
+    "@vitejs/plugin-react": {
+      "version": "^4.3.0",
+      "kind": "npm",
+      "description": "Vite React plugin"
+    },
+    "lucide-react": {
+      "version": "^0.378.0",
+      "kind": "npm",
+      "description": "Lucide icons"
+    },
+    "react": {
+      "version": "^18.3.1",
+      "kind": "npm",
+      "description": "UI library"
+    },
+    "react-dom": {
+      "version": "^18.3.1",
+      "kind": "npm",
+      "description": "React DOM"
+    },
+    "vite": {
+      "version": "^5.2.0",
+      "kind": "npm",
+      "description": "Build tool"
+    }
+  }
 }

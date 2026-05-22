@@ -1,0 +1,35 @@
+{
+  "name": "vivarium",
+  "displayName": "Vivarium",
+  "description": "An autonomous AI social ecosystem where distinct personas interact, debate, and react to news in real-time.",
+  "category": "tools/ai",
+  "status": "experimental",
+  "platforms": [
+    "android",
+    "windows",
+    "web"
+  ],
+  "tags": [],
+  "authors": [
+    {
+      "name": "Scotty Venable",
+      "github": "ScottyVenable",
+      "role": "creator"
+    }
+  ],
+  "license": "GPL-3.0",
+  "created": "2026-05-22",
+  "entry": "",
+  "stack": [],
+  "dependencies": {
+    "shared": [
+      "@vitejs/plugin-react",
+      "lucide-react",
+      "react",
+      "react-dom",
+      "vite"
+    ],
+    "external": {}
+  },
+  "links": {}
+}

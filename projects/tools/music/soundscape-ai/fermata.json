@@ -1,0 +1,33 @@
+{
+  "name": "soundscape-ai",
+  "displayName": "Soundscape AI",
+  "description": "A procedural ambient audio generator and interactive 2D spatial mixer powered by the Web Audio API.",
+  "category": "tools/music",
+  "status": "experimental",
+  "platforms": [
+    "web"
+  ],
+  "tags": [],
+  "authors": [
+    {
+      "name": "Scotty Venable",
+      "github": "ScottyVenable",
+      "role": "creator"
+    }
+  ],
+  "license": "GPL-3.0",
+  "created": "2026-05-22",
+  "entry": "",
+  "stack": [],
+  "dependencies": {
+    "shared": [
+      "@vitejs/plugin-react",
+      "lucide-react",
+      "react",
+      "react-dom",
+      "vite"
+    ],
+    "external": {}
+  },
+  "links": {}
+}
