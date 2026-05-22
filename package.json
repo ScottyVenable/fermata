@@ -22,13 +22,13 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.7.0",
-    "electron": "^30.5.1",
-    "electron-builder": "^24.13.3",
+    "electron": "^39.8.5",
+    "electron-builder": "^26.8.1",
     "lucide-react": "^0.378.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.9.3",
-    "vite": "^5.4.21"
+    "vite": "^8.0.14"
   },
   "devDependencies": {
     "@types/react": "^19.2.15",
