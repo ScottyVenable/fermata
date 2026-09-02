@@ -2,7 +2,7 @@
 
 # Soundscape AI
 
-*One-line tagline. Replace this.*
+*A procedural ambient audio generator and spatial mixer built on the Web Audio API.*
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-3DA639?style=flat-square&logo=gnu&logoColor=white)](../../../LICENSE)
 [![Status: Experimental](https://img.shields.io/badge/status-experimental-yellow?style=flat-square)](#)
@@ -10,53 +10,42 @@
 
 </div>
 
-> A short, punchy description of the project. What it is, what it's for, why it exists. Two sentences max.
-
----
+Soundscape AI generates ambient soundscapes in the browser and lets you place each source on a 2D spatial canvas. Rain crackle, detuned space pads, forest bird sweeps, key echoes, and wind are all synthesized live with the Web Audio API — no audio files required.
 
 ## What this is
 
-A paragraph or two describing the project in more detail. What problem does it solve, or what idea does it explore? Who would care about this?
+A single-purpose web toy. Open it, toggle sources, drag them around the canvas, adjust master volume/mute, and the app mixes a real-time ambient bed. Presets are described in `src/components/SoundCanvas.tsx` and the mixer UI lives in `src/App.tsx`.
 
-## Quick start
+## Run it
 
 ```bash
-# Replace with the actual commands.
+# From the repo root, install shared deps once:
+npm ci --ignore-scripts --no-audit --no-fund
+
 cd projects/tools/music/soundscape-ai
-# install / build / run steps here
+npm run dev        # Vite dev server (port 5175)
+npm run build      # production build -> dist/
+npm run preview    # preview the built app
 ```
 
-If the project runs in a browser, link to the entry file: `open index.html` or describe the dev server command.
+Open the browser tab and press play. Audio is generated locally; no server or API keys are used.
 
-## How it works
+## Status
 
-Brief explanation of the implementation. Keep it high-level here — deeper detail belongs in `docs/` if needed. Mention notable libraries, design choices, or constraints.
+- **Status:** experimental
+- **Known gaps:** the UI is concentrated in a very large `App.tsx`; no automated tests; no saved presets or export.
+- **Next ideas:** split `App.tsx`, persist a user's source layout, add shareable preset URLs, and add a light smoke test around generated sound parameters.
 
-## Features
+## Structure
 
-- Feature one
-- Feature two
-- Feature three
-
-## Status & roadmap
-
-Current status: **Experimental**. See `TODO.md` for what's next.
+- `src/App.tsx` — preset state + mixer controls.
+- `src/components/SoundCanvas.tsx` — spatial drag canvas and per-source rendering hooks.
+- `src/index.css` — styling.
 
 ## Stack
 
-List the main technologies. Use chips if you want.
-
-[![Node](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)](#)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#)
-
-## Credits
-
-Created by Scotty Venable ([@ScottyVenable](https://github.com/ScottyVenable)).
-
-Contributors:
-
-- (Add yourself here when you contribute.)
+React 18, Vite, TypeScript, React, lucide-react, Web Audio API.
 
 ## License
 
-GPL-3.0 — see the [repo-level LICENSE](../../../LICENSE). All projects in Fermata share the same license.
+GPL-3.0 — see the [repo-level LICENSE](../../../LICENSE).

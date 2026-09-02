@@ -11,7 +11,10 @@
     "validate": "node scripts/validate.mjs",
     "organize": "node scripts/organize.mjs",
     "add-dep": "node scripts/add-dependency.mjs",
-    "deps": "node scripts/add-dependency.mjs"
+    "deps": "node scripts/add-dependency.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "typecheck": "node scripts/typecheck.mjs",
+    "check": "npm run validate && npm run doctor && npm run typecheck"
   },
   "engines": {
     "node": ">=18"
@@ -28,10 +31,11 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.9.3",
-    "vite": "^5.4.21"
+    "vite": "^5.4.21",
+    "ws": "^8.21.3"
   },
   "devDependencies": {
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3"
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7"
   }
 }

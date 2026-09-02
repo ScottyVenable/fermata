@@ -27,7 +27,8 @@
       "lucide-react",
       "react",
       "react-dom",
-      "vite"
+      "vite",
+      "ws"
     ],
     "external": {}
   },

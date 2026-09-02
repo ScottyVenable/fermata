@@ -1,6 +1,6 @@
 # Categories
 
-The canonical list of categories Fermata accepts. Validation reads this from `scripts/categories.mjs` — if you add one here, add it there too (or do it in a single PR).
+The canonical list of categories Fermata accepts. Validation reads the allowed set from `scripts/lib/repo.mjs` (`ALLOWED_CATEGORIES`) — if you add one here, add it there too (or do it in a single PR).
 
 ## Top-level categories
 
@@ -36,7 +36,7 @@ Long-form writing, notes, or documentation that ships as the deliverable. *Not* 
 1. Decide if it's truly distinct from existing buckets. "AI music tools" is not a new subcategory — it's `tools/music/` with `tags: ["ai"]`.
 2. Open a PR that:
    - Adds the category here.
-   - Adds it to `scripts/categories.mjs`.
+   - Adds it to `ALLOWED_CATEGORIES` in `scripts/lib/repo.mjs`.
    - Creates the folder under `projects/` with a `.gitkeep`.
    - Updates the table in `README.md`.
 3. If you have a project that needs the new category, include it in the same PR.

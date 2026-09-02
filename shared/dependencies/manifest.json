@@ -25,6 +25,11 @@
       "version": "^5.2.0",
       "kind": "npm",
       "description": "Build tool"
+    },
+    "ws": {
+      "version": "^8.21.3",
+      "kind": "npm",
+      "description": "WebSocket client/server for desktop sync"
     }
   }
 }

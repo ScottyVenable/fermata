@@ -81,6 +81,9 @@ npm run new -- --name my-thing --category tools/ai
 # Validate every project's metadata
 npm run validate
 
+# Full local sanity pass (validate + placeholder check + typecheck)
+npm run check
+
 # Pull in a shared dependency
 npm run add-dep -- --project my-thing --dep three
 ```

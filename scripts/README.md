@@ -6,9 +6,13 @@ The tooling that makes Fermata work. Plain Node.js, no build step, no third-part
 | --- | --- | --- |
 | `new-project.mjs` | `npm run new` | Scaffolds a new project by copying `template/` and replacing placeholders. |
 | `validate.mjs` | `npm run validate` | Walks `projects/`, validates every `fermata.json`. Used by CI. |
+| `doctor.mjs` | `npm run doctor` | Lightweight health check: placeholder READMEs, stale metadata, archived reasons. |
+| `typecheck.mjs` | `npm run typecheck` | Runs `tsc --noEmit` for every project with a `tsconfig.json`. |
 | `organize.mjs` | `npm run organize` | Regenerates `projects/INDEX.md`, optionally bumps `updated` on changed projects. Used by CI on merge. |
 | `add-dependency.mjs` | `npm run add-dep` / `npm run deps` | Manages `shared/dependencies/manifest.json` and links shared deps into projects' `fermata.json`. |
 | `lib/repo.mjs` | (library) | Shared helpers: project discovery, IO, arg parsing, formatting. |
+
+`npm run check` runs `validate` + `doctor` + `typecheck` as one local sanity pass.
 
 ## Conventions
 

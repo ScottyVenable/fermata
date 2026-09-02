@@ -2,7 +2,7 @@
 
 # Antigravity IDE
 
-*One-line tagline. Replace this.*
+*An agentic development environment prototype with a file-tree, an agent console, and a desktop sync server.*
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-3DA639?style=flat-square&logo=gnu&logoColor=white)](../../../LICENSE)
 [![Status: Experimental](https://img.shields.io/badge/status-experimental-yellow?style=flat-square)](#)
@@ -10,53 +10,55 @@
 
 </div>
 
-> A short, punchy description of the project. What it is, what it's for, why it exists. Two sentences max.
-
----
+Antigravity IDE is an experimental workspace UI for working with a local coding agent. It presents a mock project tree, an editor, and an agent console. Point it at Ollama or LM Studio in Settings and it will stream a step-by-step agent loop back into the UI; the desktop shell also hosts a tiny WebSocket sync server for pairing with the Android companion.
 
 ## What this is
 
-A paragraph or two describing the project in more detail. What problem does it solve, or what idea does it explore? Who would care about this?
+A React + Vite web app with an optional Electron desktop shell. The agent loop is asynchronous and tool-shaped (`READ_FILE`, `WRITE_FILE`, `LIST_DIR`, `RUN_COMMAND`), so it can be swapped for real local-model input later. The Android app is a Compose companion that shows the same product idea.
 
-## Quick start
+## Run it
 
 ```bash
-# Replace with the actual commands.
+# From the repo root, install shared deps once:
+npm ci --ignore-scripts --no-audit --no-fund
+
 cd projects/tools/dev/antigravity-ide
-# install / build / run steps here
+npm run dev        # Vite dev server (port 5173)
+npm run build      # production build -> dist/
+npm run preview    # preview the built app
+
+# Desktop shell (Electron, optional):
+npm run desktop:start
 ```
 
-If the project runs in a browser, link to the entry file: `open index.html` or describe the dev server command.
+The desktop shell starts a local WebSocket sync server on port **3001** for mobile pairing. This is intended for local/experimental use only.
 
-## How it works
+Android companion:
 
-Brief explanation of the implementation. Keep it high-level here — deeper detail belongs in `docs/` if needed. Mention notable libraries, design choices, or constraints.
+```bash
+cd projects/tools/dev/antigravity-ide/android
+./gradlew test              # local unit tests
+./gradlew assembleDebug     # build the app
+```
 
-## Features
+## Status
 
-- Feature one
-- Feature two
-- Feature three
+- **Status:** experimental
+- **Known gaps:** the sync server is unauthenticated and the Electron window uses permissive web preferences; the mobile app is a scaffold; the mock project tree is intentionally fake.
+- **Next ideas:** harden the Electron window (context isolation + no node integration), add auth or bind the sync server to loopback, and feed real files from disk.
 
-## Status & roadmap
+## Structure
 
-Current status: **Experimental**. See `TODO.md` for what's next.
+- `src/agent/AgentLoop.ts` — the agent step loop and tool definitions.
+- `src/agent/LocalAI.ts` — local-model connection helper.
+- `src/components/` — Editor, Sidebar, AgentConsole, Settings.
+- `desktop.js` — Electron shell + WebSocket sync server.
+- `android/` — Compose Android companion.
 
 ## Stack
 
-List the main technologies. Use chips if you want.
-
-[![Node](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)](#)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#)
-
-## Credits
-
-Created by Scotty Venable ([@ScottyVenable](https://github.com/ScottyVenable)).
-
-Contributors:
-
-- (Add yourself here when you contribute.)
+React 18, Vite, TypeScript, lucide-react, Electron, `ws`, Kotlin + Jetpack Compose (Android).
 
 ## License
 
-GPL-3.0 — see the [repo-level LICENSE](../../../LICENSE). All projects in Fermata share the same license.
+GPL-3.0 — see the [repo-level LICENSE](../../../LICENSE).
