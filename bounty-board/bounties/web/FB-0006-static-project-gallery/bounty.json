@@ -1,0 +1,54 @@
+{
+  "id": "FB-0006",
+  "title": "Static project gallery generated from fermata.json",
+  "slug": "static-project-gallery",
+  "track": "web",
+  "status": "open",
+  "size": "l",
+  "difficulty": "advanced",
+  "reward": {
+    "rep": 320,
+    "bonus_rep": 60,
+    "cash": null
+  },
+  "labels": [
+    "showcase",
+    "pages"
+  ],
+  "skills": [
+    "node",
+    "html",
+    "css",
+    "github-actions"
+  ],
+  "targets": [
+    {
+      "type": "repo-path",
+      "value": "scripts/"
+    },
+    {
+      "type": "repo-path",
+      "value": "docs/"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [
+    "FB-0202"
+  ],
+  "claim": {
+    "ttl_days": 30,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 8,
+  "completion": null
+}

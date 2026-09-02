@@ -1,0 +1,58 @@
+{
+  "id": "FB-0200",
+  "title": "Build the Fermata website and contributor ecosystem",
+  "slug": "fermata-website-and-ecosystem",
+  "track": "ecosystem",
+  "status": "open",
+  "size": "xl",
+  "difficulty": "expert",
+  "reward": {
+    "rep": 1200,
+    "bonus_rep": 300,
+    "cash": null
+  },
+  "labels": [
+    "epic-child",
+    "flagship",
+    "help-wanted-urgent"
+  ],
+  "skills": [
+    "typescript",
+    "react",
+    "nextjs",
+    "postgres",
+    "auth",
+    "api"
+  ],
+  "targets": [
+    {
+      "type": "new-project",
+      "value": "web/fermata-web"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": "EPIC-001",
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 90,
+    "max_concurrent": 1,
+    "current": null,
+    "history": [],
+    "min_tier": "phrase"
+  },
+  "acceptance_count": 12,
+  "completion": null,
+  "children": [
+    "FB-0201",
+    "FB-0202",
+    "FB-0203",
+    "FB-0204"
+  ]
+}

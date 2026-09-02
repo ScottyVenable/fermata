@@ -1,0 +1,51 @@
+{
+  "id": "FB-0003",
+  "title": "Stale project sweeper and health labels workflow",
+  "slug": "stale-project-sweeper",
+  "track": "automation",
+  "status": "open",
+  "size": "m",
+  "difficulty": "intermediate",
+  "reward": {
+    "rep": 120,
+    "bonus_rep": 0,
+    "cash": null
+  },
+  "labels": [
+    "ci",
+    "maintenance"
+  ],
+  "skills": [
+    "github-actions",
+    "node",
+    "yaml"
+  ],
+  "targets": [
+    {
+      "type": "repo-path",
+      "value": ".github/workflows/"
+    },
+    {
+      "type": "repo-path",
+      "value": "scripts/organize.mjs"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 21,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 6,
+  "completion": null
+}

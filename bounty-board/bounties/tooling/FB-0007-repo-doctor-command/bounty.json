@@ -1,0 +1,48 @@
+{
+  "id": "FB-0007",
+  "title": "Add a repo doctor command for environment checks",
+  "slug": "repo-doctor-command",
+  "track": "tooling",
+  "status": "open",
+  "size": "s",
+  "difficulty": "beginner",
+  "reward": {
+    "rep": 50,
+    "bonus_rep": 0,
+    "cash": null
+  },
+  "labels": [
+    "good-first-bounty",
+    "bot-friendly",
+    "dx",
+    "scripts"
+  ],
+  "skills": [
+    "node",
+    "cli"
+  ],
+  "targets": [
+    {
+      "type": "repo-path",
+      "value": "scripts/"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 14,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 5,
+  "completion": null
+}

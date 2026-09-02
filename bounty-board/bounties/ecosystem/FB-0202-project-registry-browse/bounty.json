@@ -1,0 +1,49 @@
+{
+  "id": "FB-0202",
+  "title": "Project registry: browse, search, and publish on the web",
+  "slug": "project-registry-browse",
+  "track": "ecosystem",
+  "status": "open",
+  "size": "l",
+  "difficulty": "advanced",
+  "reward": {
+    "rep": 420,
+    "bonus_rep": 90,
+    "cash": null
+  },
+  "labels": [
+    "epic-child"
+  ],
+  "skills": [
+    "typescript",
+    "react",
+    "search",
+    "postgres"
+  ],
+  "targets": [
+    {
+      "type": "new-project",
+      "value": "web/fermata-web"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": "EPIC-001",
+  "depends_on": [
+    "FB-0200"
+  ],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 60,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 8,
+  "completion": null
+}

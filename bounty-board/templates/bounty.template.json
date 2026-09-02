@@ -1,0 +1,35 @@
+{
+  "$comment": "Copy to bounty.json alongside README.md. Every field below is documented in bounty-board/ARCHITECTURE.md#data-model and validated against schemas/bounty.schema.json.",
+  "id": "FB-####",
+  "title": "Outcome-shaped title, matching the README H1",
+  "slug": "kebab-case-slug-matching-the-folder",
+  "track": "tooling",
+  "status": "draft",
+  "size": "s",
+  "difficulty": "beginner",
+  "reward": {
+    "rep": 60,
+    "bonus_rep": 0,
+    "cash": null
+  },
+  "labels": [],
+  "skills": [],
+  "targets": [
+    { "type": "repo-path", "value": "path/to/thing" }
+  ],
+  "requested_by": { "handle": "yourhandle", "kind": "human" },
+  "created": "YYYY-MM-DD",
+  "updated": "YYYY-MM-DD",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 14,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 5,
+  "completion": null
+}

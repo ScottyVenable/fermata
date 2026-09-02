@@ -3,6 +3,11 @@
 - **[Home](Home)**
 - [Quick Start](Quick-Start)
 
+### Contribute
+
+- [Bounty Board](Bounty-Board)
+- [Reputation](Reputation)
+
 ### Reference
 
 - [Project Categories](Project-Categories)

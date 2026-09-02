@@ -5,6 +5,7 @@ Thanks for stopping by. Fermata exists so people can move from "I have an idea" 
 ## Table of contents
 
 - [Ways to contribute](#ways-to-contribute)
+- [Claiming a bounty](#claiming-a-bounty)
 - [Adding a new project](#adding-a-new-project)
 - [Working on an existing project](#working-on-an-existing-project)
 - [Improving the tooling](#improving-the-tooling)
@@ -21,8 +22,48 @@ Thanks for stopping by. Fermata exists so people can move from "I have an idea" 
 2. **Extend an existing project.** Pick anything in `projects/`. Open an issue first if it's a meaningful change to someone else's work.
 3. **Improve the tooling.** Scripts, GitHub Actions, templates, docs — all fair game.
 4. **Triage and review.** Help review PRs, validate metadata, or open issues for stale/broken projects.
+5. **Claim a bounty.** Work that's already scoped and waiting for someone. See [Claiming a bounty](#claiming-a-bounty).
 
 You do **not** need to ask permission to contribute. Just open a PR.
+
+Contributions earn **REP** — a reputation score that unlocks permissions and shows up on your
+profile. Improving *someone else's* project pays 1.5× what improving your own does, which is
+deliberate. Details: [bounty-board/REPUTATION.md](bounty-board/REPUTATION.md).
+
+---
+
+## Claiming a bounty
+
+The [bounty board](bounty-board/) is a queue of scoped work with explicit acceptance criteria.
+It's the shortest path from "I'd like to help" to "I know exactly what to build."
+
+```bash
+npm run bounty -- list --status open              # what's available
+npm run bounty -- list --label good-first-bounty  # start here if you're new
+npm run bounty -- show FB-0001                    # read one in full
+npm run bounty -- claim FB-0001 --who yourhandle  # take it
+```
+
+Claiming writes a claim file and flips the bounty's status. Commit both, open a PR titled
+`claim: FB-0001 <slug>`, and it'll merge quickly. Then build against the acceptance criteria and
+open your real PR with `Closes FB-0001` in the body — that's what triggers the REP award on merge.
+
+A few things worth knowing:
+
+- **Acceptance criteria are frozen once you claim.** Nobody can move the goalposts on you.
+- **Claims have a TTL** (14 days by default). Post a note in your claim file to reset it.
+- **Dropping a claim costs nothing.** Only going silent does.
+- **Ask questions early.** Nobody loses REP for asking, and a rejected submission is far more
+  expensive than a comment on your claim PR.
+- **`xs` bounties skip the claim step** — just open the PR.
+
+Bots are welcome and use the same commands, with three extra rules in
+[GOVERNANCE.md](bounty-board/GOVERNANCE.md#bot-contributors).
+
+Nothing to claim that interests you? Post a proposal in
+[`bounty-board/proposals/`](bounty-board/proposals/) or open a
+[bounty proposal issue](../../issues/new?template=bounty-proposal.md). Promoted proposals earn
+the proposer +10 REP whether or not they build it.
 
 ---
 

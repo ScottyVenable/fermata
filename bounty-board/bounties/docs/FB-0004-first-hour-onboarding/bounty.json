@@ -1,0 +1,47 @@
+{
+  "id": "FB-0004",
+  "title": "Write the first-hour contributor onboarding guide",
+  "slug": "first-hour-onboarding",
+  "track": "docs",
+  "status": "open",
+  "size": "s",
+  "difficulty": "beginner",
+  "reward": {
+    "rep": 55,
+    "bonus_rep": 0,
+    "cash": null
+  },
+  "labels": [
+    "good-first-bounty",
+    "documentation",
+    "onboarding"
+  ],
+  "skills": [
+    "writing",
+    "markdown"
+  ],
+  "targets": [
+    {
+      "type": "repo-path",
+      "value": "docs/"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 14,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 6,
+  "completion": null
+}

@@ -1,0 +1,29 @@
+{
+  "handle": "scottyvenable",
+  "kind": "human",
+  "rep_lifetime": 60,
+  "rep_season": 60,
+  "season": "2026-Q3",
+  "tier": "rest",
+  "first_seen": "2026-09-01",
+  "last_active": "2026-09-01",
+  "counts": {
+    "bounties_completed": 0,
+    "bounties_authored": 0,
+    "reviews": 0,
+    "projects_published": 0,
+    "external_merged": 0
+  },
+  "tracks": {
+    "meta": 60
+  },
+  "badges": [],
+  "recent": [
+    {
+      "ts": "2026-09-01T00:00:00Z",
+      "event": "ecosystem.integration",
+      "ref": "bounty-board",
+      "points": 60
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": "FB-0300",
+  "title": "Public API and bidirectional Git sync service",
+  "slug": "public-api-and-git-sync",
+  "track": "ecosystem",
+  "status": "open",
+  "size": "xl",
+  "difficulty": "expert",
+  "reward": {
+    "rep": 600,
+    "bonus_rep": 120,
+    "cash": null
+  },
+  "labels": [
+    "epic-child",
+    "infrastructure"
+  ],
+  "skills": [
+    "typescript",
+    "api",
+    "github-api",
+    "postgres",
+    "workers"
+  ],
+  "targets": [
+    {
+      "type": "new-project",
+      "value": "web/fermata-web"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": "EPIC-001",
+  "depends_on": [
+    "FB-0200"
+  ],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 90,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 9,
+  "completion": null
+}
