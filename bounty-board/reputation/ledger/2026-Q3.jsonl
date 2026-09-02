@@ -1,0 +1,1 @@
+{"ts":"2026-09-01T00:00:00Z","id":"ev_20260901_000000_0001","event":"ecosystem.integration","subject":"scottyvenable","subject_kind":"human","actor":"fermata-genesis","ref":"bounty-board","track":"meta","base_points":60,"multiplier":1,"points":60,"reason":"Genesis event: established the bounty board and reputation system.","source":"import","schema":1}

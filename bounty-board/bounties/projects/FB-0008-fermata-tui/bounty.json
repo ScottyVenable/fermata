@@ -1,0 +1,47 @@
+{
+  "id": "FB-0008",
+  "title": "Build fermata-tui, a terminal browser for the monorepo",
+  "slug": "fermata-tui",
+  "track": "projects",
+  "status": "open",
+  "size": "m",
+  "difficulty": "intermediate",
+  "reward": {
+    "rep": 180,
+    "bonus_rep": 40,
+    "cash": null
+  },
+  "labels": [
+    "new-project",
+    "cli"
+  ],
+  "skills": [
+    "node",
+    "cli",
+    "tui"
+  ],
+  "targets": [
+    {
+      "type": "new-project",
+      "value": "tools/dev/fermata-tui"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 21,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 7,
+  "completion": null
+}

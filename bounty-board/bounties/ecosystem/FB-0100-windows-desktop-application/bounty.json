@@ -1,0 +1,53 @@
+{
+  "id": "FB-0100",
+  "title": "Build the Fermata desktop application for Windows",
+  "slug": "windows-desktop-application",
+  "track": "ecosystem",
+  "status": "open",
+  "size": "xl",
+  "difficulty": "expert",
+  "reward": {
+    "rep": 1200,
+    "bonus_rep": 300,
+    "cash": null
+  },
+  "labels": [
+    "epic-child",
+    "flagship",
+    "help-wanted-urgent"
+  ],
+  "skills": [
+    "typescript",
+    "electron",
+    "react",
+    "windows",
+    "packaging"
+  ],
+  "targets": [
+    {
+      "type": "new-project",
+      "value": "tools/dev/fermata-desktop"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": "EPIC-001",
+  "depends_on": [
+    "FB-0300"
+  ],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 90,
+    "max_concurrent": 1,
+    "current": null,
+    "history": [],
+    "min_tier": "phrase"
+  },
+  "acceptance_count": 12,
+  "completion": null
+}

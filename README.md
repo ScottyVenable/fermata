@@ -8,6 +8,7 @@
 [![Status](https://img.shields.io/badge/status-active-brightgreen?style=flat-square)](#)
 [![Contributions](https://img.shields.io/badge/contributions-welcome-ff7f50?style=flat-square)](CONTRIBUTING.md)
 [![Projects](https://img.shields.io/badge/projects-curated-blueviolet?style=flat-square)](projects/)
+[![Bounties](https://img.shields.io/badge/bounties-17_open-ff7f50?style=flat-square)](bounty-board/INDEX.md)
 [![Made with](https://img.shields.io/badge/made_with-anything-1f6feb?style=flat-square)](#tech-stack)
 [![Vibe](https://img.shields.io/badge/vibe-coded-ff69b4?style=flat-square)](#philosophy)
 
@@ -28,6 +29,7 @@
 - [Categories](#categories)
 - [Project metadata](#project-metadata)
 - [Shared dependencies](#shared-dependencies)
+- [Bounty board](#bounty-board)
 - [Contributing](#contributing)
 - [Automation](#automation)
 - [Tech stack](#tech-stack)
@@ -58,7 +60,8 @@ fermata/
 ├── projects/          The actual projects, grouped by category
 ├── template/          Scaffold copied when starting a new project
 ├── shared/            Centralized dependencies + reusable assets
-├── scripts/           Project tooling (new-project, validate, organize, add-dep)
+├── scripts/           Project tooling (new-project, validate, organize, add-dep, bounty, rep)
+├── bounty-board/      Open work to claim + the reputation system
 ├── docs/              Guides, specs, and wiki source
 └── .github/           Workflows + issue templates
 ```
@@ -168,15 +171,52 @@ This means new projects start at zero install time when the deps they need are a
 
 ---
 
+## Bounty board
+
+Work that wants doing, and a way to get credit for doing it. The **[bounty board](bounty-board/)**
+is a queue of scoped, acceptance-tested tasks that anyone — human or bot — can claim. Completing
+one earns **REP**, a non-transferable reputation score that unlocks permissions and shows up on
+your profile.
+
+```bash
+npm run bounty -- list --status open       # what needs doing
+npm run bounty -- show FB-0001             # read one
+npm run bounty -- claim FB-0001 --who you  # take it
+npm run rep -- who you                     # your standing
+```
+
+| | |
+| --- | --- |
+| **[INDEX.md](bounty-board/INDEX.md)** | Every bounty, generated, always current |
+| **[README.md](bounty-board/README.md)** | How the board works and how to claim |
+| **[REPUTATION.md](bounty-board/REPUTATION.md)** | How REP is earned, the tiers, the rules |
+| **[ARCHITECTURE.md](bounty-board/ARCHITECTURE.md)** | The full system design |
+| **[EPIC-001](bounty-board/epics/EPIC-001-fermata-ecosystem/)** | The big one: a Windows app, a website with accounts, and a public API |
+
+New here? Look for the `good-first-bounty` label. Bots are welcome and have their own
+[rules of engagement](bounty-board/GOVERNANCE.md#bot-contributors).
+
+---
+
 ## Contributing
 
 New projects, fixes to existing ones, contributions to the tooling — all welcome. The short version:
+
+**Adding a project:**
 
 1. Fork & branch.
 2. `npm run new -- --name your-thing --category <category>` (or copy `template/`).
 3. Fill in `fermata.json` and `README.md`.
 4. `npm run validate` — make sure it's green.
 5. Open a PR.
+
+**Claiming a bounty:**
+
+1. `npm run bounty -- list --status open` and pick one.
+2. `npm run bounty -- claim FB-#### --who yourhandle`, then PR the claim.
+3. Build it against the acceptance criteria.
+4. Open a PR with `Closes FB-####` in the body.
+5. REP lands on merge.
 
 Full process, code of conduct, and review expectations: **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 
@@ -187,7 +227,10 @@ Full process, code of conduct, and review expectations: **[CONTRIBUTING.md](CONT
 | Event | Action |
 | --- | --- |
 | PR opened or updated | Validate every project's `fermata.json` and folder placement. |
+| PR touching `bounty-board/` | Validate bounties, audit the ledger, check generated files are current. |
 | PR merged to `main` | Run `organize` to keep the tree tidy and regenerate indices. |
+| Merge referencing `Closes FB-####` | Complete the bounty, award REP, regenerate the board. |
+| Nightly | Expire lapsed claims and run the reputation integrity audit. |
 | `docs/wiki/` changes | Sync to the GitHub Wiki. |
 
 Workflows live in `.github/workflows/`. Each is named after what it does.

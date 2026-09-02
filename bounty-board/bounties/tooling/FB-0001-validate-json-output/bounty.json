@@ -1,0 +1,48 @@
+{
+  "id": "FB-0001",
+  "title": "Machine-readable output for the validate script",
+  "slug": "validate-json-output",
+  "track": "tooling",
+  "status": "open",
+  "size": "s",
+  "difficulty": "beginner",
+  "reward": {
+    "rep": 45,
+    "bonus_rep": 15,
+    "cash": null
+  },
+  "labels": [
+    "good-first-bounty",
+    "bot-friendly",
+    "scripts",
+    "dx"
+  ],
+  "skills": [
+    "node",
+    "cli"
+  ],
+  "targets": [
+    {
+      "type": "repo-path",
+      "value": "scripts/validate.mjs"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 14,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 6,
+  "completion": null
+}

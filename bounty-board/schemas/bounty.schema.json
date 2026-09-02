@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/ScottyVenable/fermata/bounty-board/schemas/bounty.schema.json",
+  "title": "Fermata Bounty",
+  "description": "Machine-readable sidecar for a bounty. Lives at bounties/<track>/FB-####-<slug>/bounty.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id", "title", "slug", "track", "status", "size", "difficulty",
+    "reward", "requested_by", "created", "claim", "acceptance_count"
+  ],
+  "properties": {
+    "$comment": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^FB-[0-9]{4}$",
+      "description": "Immutable. Must match the folder prefix. Never reused."
+    },
+    "title": { "type": "string", "minLength": 10, "maxLength": 100 },
+    "slug": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": 60 },
+    "track": {
+      "enum": ["tooling", "automation", "docs", "design", "web", "projects", "ecosystem", "meta"]
+    },
+    "status": {
+      "enum": ["draft", "open", "claimed", "in-review", "completed", "blocked", "cancelled", "expired"]
+    },
+    "size": { "enum": ["xs", "s", "m", "l", "xl", "epic"] },
+    "difficulty": { "enum": ["beginner", "intermediate", "advanced", "expert"] },
+    "reward": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rep"],
+      "properties": {
+        "rep": { "type": "integer", "minimum": 0, "maximum": 5000 },
+        "bonus_rep": { "type": "integer", "minimum": 0, "maximum": 1000, "default": 0 },
+        "cash": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["amount", "currency", "sponsor"],
+              "properties": {
+                "amount": { "type": "number", "exclusiveMinimum": 0 },
+                "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                "sponsor": { "type": "string" },
+                "terms_url": { "type": "string", "format": "uri" }
+              }
+            }
+          ],
+          "default": null
+        }
+      }
+    },
+    "labels": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+      "uniqueItems": true
+    },
+    "skills": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9.+-]*$" },
+      "uniqueItems": true
+    },
+    "targets": {
+      "type": "array",
+      "description": "What the work touches. Drives the reputation multiplier.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "value"],
+        "properties": {
+          "type": { "enum": ["repo-path", "project", "new-project", "external-repo"] },
+          "value": { "type": "string", "minLength": 1 },
+          "url": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "requested_by": { "$ref": "#/definitions/actor" },
+    "created": { "$ref": "#/definitions/date" },
+    "updated": { "$ref": "#/definitions/date" },
+    "deadline": { "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/date" }] },
+    "epic": { "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^EPIC-[0-9]{3}$" }] },
+    "depends_on": { "type": "array", "items": { "type": "string", "pattern": "^FB-[0-9]{4}$" }, "uniqueItems": true },
+    "blocks": { "type": "array", "items": { "type": "string", "pattern": "^FB-[0-9]{4}$" }, "uniqueItems": true },
+    "children": {
+      "type": "array",
+      "description": "Only meaningful when size is 'epic'.",
+      "items": { "type": "string", "pattern": "^FB-[0-9]{4}$" },
+      "uniqueItems": true
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ttl_days"],
+      "properties": {
+        "ttl_days": { "type": "integer", "minimum": 1, "maximum": 180 },
+        "max_concurrent": { "type": "integer", "minimum": 1, "maximum": 5, "default": 1 },
+        "min_tier": {
+          "enum": ["rest", "note", "measure", "phrase", "movement", "fermata", "coda"],
+          "description": "Overrides the default tier gate implied by size."
+        },
+        "current": { "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/claimRecord" }] },
+        "history": { "type": "array", "items": { "$ref": "#/definitions/claimRecord" } }
+      }
+    },
+    "acceptance_count": {
+      "type": "integer",
+      "minimum": 3,
+      "description": "Number of checkboxes in the README's Acceptance criteria section. Frozen once claimed."
+    },
+    "blocked_reason": { "type": "string" },
+    "cancelled_reason": { "type": "string" },
+    "cancelled_at": { "$ref": "#/definitions/date" },
+    "completion": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["handle", "merged_at", "rep_awarded"],
+          "properties": {
+            "handle": { "type": "string" },
+            "kind": { "enum": ["human", "bot"] },
+            "merged_at": { "type": "string", "format": "date-time" },
+            "pr": { "type": "integer" },
+            "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+            "rep_awarded": { "type": "integer" },
+            "multiplier": { "type": "number", "minimum": 0, "maximum": 2 },
+            "reviewers": { "type": "array", "items": { "type": "string" } },
+            "partial": { "type": "boolean", "default": false }
+          }
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handle", "kind"],
+      "properties": {
+        "handle": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["human", "bot", "maintainer"] }
+      }
+    },
+    "claimRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handle", "kind", "claimed_at"],
+      "properties": {
+        "handle": { "type": "string" },
+        "kind": { "enum": ["human", "bot"] },
+        "operator": { "type": "string", "description": "Accountable human. Required when kind is bot." },
+        "claimed_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": "string", "format": "date-time" },
+        "released_at": { "type": "string", "format": "date-time" },
+        "outcome": { "enum": ["active", "delivered", "dropped", "expired", "superseded"] },
+        "pr": { "oneOf": [{ "type": "null" }, { "type": "integer" }] },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "id": "FB-0902",
+  "title": "Reputation profile cards and badge SVG generator",
+  "slug": "reputation-profile-cards",
+  "track": "meta",
+  "status": "open",
+  "size": "m",
+  "difficulty": "intermediate",
+  "reward": {
+    "rep": 110,
+    "bonus_rep": 25,
+    "cash": null
+  },
+  "labels": [
+    "reputation",
+    "svg"
+  ],
+  "skills": [
+    "node",
+    "svg",
+    "design"
+  ],
+  "targets": [
+    {
+      "type": "repo-path",
+      "value": "bounty-board/reputation/"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [
+    "FB-0005"
+  ],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 21,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 6,
+  "completion": null
+}

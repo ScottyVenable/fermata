@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/ScottyVenable/fermata/bounty-board/schemas/ledger-event.schema.json",
+  "title": "Fermata Reputation Ledger Event",
+  "description": "One line of reputation/ledger/<YYYY>-Q<n>.jsonl. Append-only; never edited.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ts", "id", "event", "subject", "subject_kind", "actor", "ref", "base_points", "multiplier", "points", "reason", "source", "schema"],
+  "properties": {
+    "ts": { "type": "string", "format": "date-time", "description": "ISO 8601 UTC. Must be >= the previous line." },
+    "id": { "type": "string", "pattern": "^ev_[0-9]{8}_[0-9]{6}_[0-9a-f]{4}$" },
+    "event": {
+      "enum": [
+        "bounty.completed", "bounty.bonus", "bounty.first", "bounty.streak",
+        "bounty.rescued", "bounty.authored", "proposal.promoted",
+        "review.completed", "review.thorough", "triage.completed",
+        "steward.quarter", "mentor.assist",
+        "project.published", "project.contribution", "project.maintained",
+        "project.graduated", "project.documented",
+        "external.merged", "external.reported", "ecosystem.integration",
+        "community.answered", "good-faith-collision", "claim.dropped-cleanly",
+        "security.reported",
+        "claim.expired-silent", "claim.expired-repeat", "submission.abandoned",
+        "conduct.violation", "award.corrected"
+      ]
+    },
+    "subject": { "type": "string", "minLength": 1, "description": "Lowercased GitHub handle earning or losing the points." },
+    "subject_kind": { "enum": ["human", "bot"] },
+    "actor": { "type": "string", "minLength": 1, "description": "Who issued the award. 'github-actions[bot]' when automated." },
+    "ref": { "type": "string", "minLength": 1, "description": "FB-####, EPIC-###, a project path, or an external repo slug." },
+    "ref_url": { "type": "string", "format": "uri", "description": "Required for external.* events." },
+    "base_points": { "type": "integer" },
+    "multiplier": { "type": "number", "minimum": 0, "maximum": 2 },
+    "points": { "type": "integer", "description": "round(base_points * multiplier). Verified by rep audit." },
+    "reason": { "type": "string", "minLength": 5, "maxLength": 280 },
+    "source": { "enum": ["workflow", "manual", "import", "correction"] },
+    "corrects": { "type": "string", "pattern": "^ev_[0-9]{8}_[0-9]{6}_[0-9a-f]{4}$", "description": "Required when source is 'correction'." },
+    "schema": { "const": 1 }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "source": { "const": "correction" } }, "required": ["source"] },
+      "then": { "required": ["corrects"] }
+    },
+    {
+      "if": { "properties": { "event": { "pattern": "^external\\." } }, "required": ["event"] },
+      "then": { "required": ["ref_url"] }
+    }
+  ]
+}

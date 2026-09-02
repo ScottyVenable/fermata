@@ -1,0 +1,52 @@
+{
+  "id": "FB-0002",
+  "title": "Scaffold presets for the new-project script",
+  "slug": "scaffold-presets",
+  "track": "tooling",
+  "status": "open",
+  "size": "m",
+  "difficulty": "intermediate",
+  "reward": {
+    "rep": 140,
+    "bonus_rep": 30,
+    "cash": null
+  },
+  "labels": [
+    "scripts",
+    "dx",
+    "templates"
+  ],
+  "skills": [
+    "node",
+    "cli",
+    "vite"
+  ],
+  "targets": [
+    {
+      "type": "repo-path",
+      "value": "scripts/new-project.mjs"
+    },
+    {
+      "type": "repo-path",
+      "value": "template/"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 21,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 7,
+  "completion": null
+}

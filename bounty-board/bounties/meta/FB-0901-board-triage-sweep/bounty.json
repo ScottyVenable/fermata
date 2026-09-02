@@ -1,0 +1,46 @@
+{
+  "id": "FB-0901",
+  "title": "Quarterly board triage sweep automation",
+  "slug": "board-triage-sweep",
+  "track": "meta",
+  "status": "open",
+  "size": "s",
+  "difficulty": "intermediate",
+  "reward": {
+    "rep": 70,
+    "bonus_rep": 0,
+    "cash": null
+  },
+  "labels": [
+    "ci",
+    "board-health"
+  ],
+  "skills": [
+    "node",
+    "github-actions"
+  ],
+  "targets": [
+    {
+      "type": "repo-path",
+      "value": "bounty-board/"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 14,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 5,
+  "completion": null
+}

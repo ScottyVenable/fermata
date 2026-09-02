@@ -1,0 +1,48 @@
+{
+  "id": "FB-0005",
+  "title": "Fermata visual identity kit and badge system",
+  "slug": "visual-identity-kit",
+  "track": "design",
+  "status": "open",
+  "size": "m",
+  "difficulty": "intermediate",
+  "reward": {
+    "rep": 160,
+    "bonus_rep": 40,
+    "cash": null
+  },
+  "labels": [
+    "human-judgment",
+    "branding",
+    "assets"
+  ],
+  "skills": [
+    "design",
+    "svg",
+    "figma"
+  ],
+  "targets": [
+    {
+      "type": "repo-path",
+      "value": "shared/assets/"
+    }
+  ],
+  "requested_by": {
+    "handle": "ScottyVenable",
+    "kind": "maintainer"
+  },
+  "created": "2026-09-01",
+  "updated": "2026-09-01",
+  "deadline": null,
+  "epic": null,
+  "depends_on": [],
+  "blocks": [],
+  "claim": {
+    "ttl_days": 21,
+    "max_concurrent": 1,
+    "current": null,
+    "history": []
+  },
+  "acceptance_count": 7,
+  "completion": null
+}

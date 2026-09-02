@@ -11,7 +11,9 @@
     "validate": "node scripts/validate.mjs",
     "organize": "node scripts/organize.mjs",
     "add-dep": "node scripts/add-dependency.mjs",
-    "deps": "node scripts/add-dependency.mjs"
+    "deps": "node scripts/add-dependency.mjs",
+    "bounty": "node scripts/bounty.mjs",
+    "rep": "node scripts/reputation.mjs"
   },
   "engines": {
     "node": ">=18"
