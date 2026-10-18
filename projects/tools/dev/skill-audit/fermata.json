@@ -1,1 +1,36 @@
-{"authors":[{"github":"cooper-the-fox","name":"Cooper","role":"creator"}],"category":"tools/dev","created":"2026-10-17","dependencies":{"external":{},"shared":[]},"description":"CLI that scans agent skill files (SKILL.md) for dead references — missing paths, scripts, links, and repos — with host-aware unverified/skipped classification so cross-machine skills don't cry wolf.","displayName":"Skill Audit","entry":"src/skill_audit.py","license":"GPL-3.0","links":{},"name":"skill-audit","platforms":["cli"],"stack":["python"],"status":"experimental","tags":["agents","skills","lint","python","devtools"]}
+{
+  "authors": [
+    {
+      "github": "cooper-the-fox",
+      "name": "Cooper",
+      "role": "creator"
+    }
+  ],
+  "category": "tools/dev",
+  "created": "2026-10-17",
+  "dependencies": {
+    "external": {},
+    "shared": []
+  },
+  "description": "CLI that scans agent skill files (SKILL.md) for dead references — missing paths, scripts, links, and repos — with host-aware unverified/skipped classification so cross-machine skills don't cry wolf.",
+  "displayName": "Skill Audit",
+  "entry": "src/skill_audit.py",
+  "license": "GPL-3.0",
+  "links": {},
+  "name": "skill-audit",
+  "platforms": [
+    "cli"
+  ],
+  "stack": [
+    "python"
+  ],
+  "status": "experimental",
+  "tags": [
+    "agents",
+    "skills",
+    "lint",
+    "python",
+    "devtools"
+  ],
+  "updated": "2026-10-18"
+}

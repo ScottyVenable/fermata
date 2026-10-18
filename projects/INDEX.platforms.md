@@ -7,6 +7,10 @@
 - [Antigravity IDE](tools/dev/antigravity-ide/) — An autonomous agentic development environment featuring filesystems tools and real-time syncing.
 - [Vivarium](tools/ai/vivarium/) — An autonomous AI social ecosystem where distinct personas interact, debate, and react to news in real-time.
 
+## cli
+
+- [Skill Audit](tools/dev/skill-audit/) — CLI that scans agent skill files (SKILL.md) for dead references — missing paths, scripts, links, and repos — with host-aware unverified/skipped classification so cross-machine skills don't cry wolf.
+
 ## web
 
 - [Antigravity IDE](tools/dev/antigravity-ide/) — An autonomous agentic development environment featuring filesystems tools and real-time syncing.
