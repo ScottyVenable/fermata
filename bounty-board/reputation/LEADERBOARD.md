@@ -2,16 +2,14 @@
 
 # Leaderboard
 
-_Season 2026-Q3 · 1 contributors · 1 ledger events · generated 2026-09-02_
+_Season 2026-Q4 · 1 contributors · 1 ledger events · generated 2026-10-18_
 
 Lifetime REP determines your tier and never decays. Season REP resets quarterly and
 drives the season board, so a good quarter beats a long history.
 
-## Season 2026-Q3
+## Season 2026-Q4
 
-| # | Contributor | Season REP | Lifetime | Tier |
-| --- | --- | --- | --- | --- |
-| 1 | [@scottyvenable](profiles/scottyvenable.json) | **60** | 60 | 𝅽 Rest |
+_No activity this season yet._
 
 ## Lifetime — humans
 

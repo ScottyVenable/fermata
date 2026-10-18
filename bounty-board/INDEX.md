@@ -2,7 +2,7 @@
 
 # Bounty Index
 
-_Last generated: 2026-09-02 · 17 bounties · 17 open · 5700 REP unclaimed_
+_Last generated: 2026-10-18 · 17 bounties · 17 open · 5700 REP unclaimed_
 
 | | Count |
 | --- | --- |
